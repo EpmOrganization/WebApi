@@ -14,7 +14,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\EPM.EFCore\EPM.EFCore.csproj" />
+    <ProjectReference Include="..\EPM.Framework\EPM.Framework.csproj" />
+    <ProjectReference Include="..\EPM.IRepository\EPM.IRepository.csproj" />
+    <ProjectReference Include="..\EPM.IService\EPM.IService.csproj" />
     <ProjectReference Include="..\EPM.Model\EPM.Model.csproj" />
+    <ProjectReference Include="..\EPM.Repository\EPM.Repository.csproj" />
+    <ProjectReference Include="..\EPM.Service\EPM.Service.csproj" />
   </ItemGroup>
 
 </Project>
