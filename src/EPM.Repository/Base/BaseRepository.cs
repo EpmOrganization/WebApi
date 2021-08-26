@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace EPM.Repository.Base
@@ -44,6 +45,12 @@ namespace EPM.Repository.Base
         public async Task<IEnumerable<T>> GetAllListAsync(Expression<Func<T, bool>> predicate)
         {
             return predicate != null ? await _dbSet.Where(predicate).ToListAsync() : await _dbSet.ToListAsync();
+        }
+
+        public object GetPropertyValue(object obj, string property)
+        {
+            PropertyInfo propertyInfo = obj.GetType().GetProperty(property);
+            return propertyInfo.GetValue(obj, null);
         }
     }
 }
