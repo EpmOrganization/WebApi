@@ -4,4 +4,11 @@
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\EPM.EFCore\EPM.EFCore.csproj" />
+    <ProjectReference Include="..\EPM.Framework\EPM.Framework.csproj" />
+    <ProjectReference Include="..\EPM.IRepository\EPM.IRepository.csproj" />
+    <ProjectReference Include="..\EPM.Model\EPM.Model.csproj" />
+  </ItemGroup>
+
 </Project>
