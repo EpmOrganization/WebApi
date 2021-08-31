@@ -17,12 +17,26 @@ namespace EPM.WebApi.CoreBuilder
         private readonly IConfiguration _configuration;
 
         // 全局变量，后面的名字可以随意
-        //readonly string CustomerSpecificOrigins = "CustomerSpecificOrigins";
+        readonly string CustomerSpecificOrigins = "CustomerSpecificOrigins";
 
         public CoreServiceBuilder(IServiceCollection service, IConfiguration configuration)
         {
             _services = service;
             _configuration = configuration;
+        }
+
+        public void AddCORS()
+        {
+            // 添加跨域服务
+            _services.AddCors(options =>
+            {
+                //配置跨域处理，允许所有来源
+                options.AddPolicy(CustomerSpecificOrigins,
+                 builder => builder.AllowAnyOrigin()
+                 .AllowAnyHeader()
+                 .WithExposedHeaders("Content-Disposition")
+                 .AllowAnyMethod());
+            });
         }
 
         public void AddDbConfig()

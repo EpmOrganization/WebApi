@@ -19,7 +19,7 @@ namespace EPM.Model.ApiModel
         /// </summary>
         public string Msg { get; set; } = string.Empty;
 
-        public static ApiResponse Success()
+        public static  ApiResponse Success()
         {
             return new ApiResponse()
             {

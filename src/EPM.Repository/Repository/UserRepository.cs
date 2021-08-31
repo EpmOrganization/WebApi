@@ -51,34 +51,17 @@ namespace EPM.Repository.Repository
                             Description = u.Description,
                             IsDeleted = u.IsDeleted
                         };
-            switch(pagingRequest.Order)
+
+            // 分页查询
+            if (pagingRequest.IsPaging)
             {
-                case "aesc":
-                    // 分页查询
-                    if (pagingRequest.IsPaging)
-                    {
-                        var skip = (pagingRequest.PageIndex - 1) * pagingRequest.PageSize;
-                        responseDto.ResponseData = await query.OrderBy(p => GetPropertyValue(p, pagingRequest.SortField))
-                            .Skip(skip).Take(pagingRequest.PageSize).ToListAsync();
-                    }
-                    else
-                    {
-                        responseDto.ResponseData = await query.OrderBy(p => GetPropertyValue(p, pagingRequest.SortField)).ToListAsync();
-                    }
-                    break;
-                case "descending":
-                    // 分页查询
-                    if (pagingRequest.IsPaging)
-                    {
-                        var skip = (pagingRequest.PageIndex - 1) * pagingRequest.PageSize;
-                        responseDto.ResponseData = await query.OrderByDescending(p => GetPropertyValue(p, pagingRequest.SortField))
-                            .Skip(skip).Take(pagingRequest.PageSize).ToListAsync();
-                    }
-                    else
-                    {
-                        responseDto.ResponseData = await query.OrderByDescending(p => GetPropertyValue(p, pagingRequest.SortField)).ToListAsync();
-                    }
-                    break;
+                var skip = (pagingRequest.PageIndex - 1) * pagingRequest.PageSize;
+                responseDto.ResponseData = await query
+                    .Skip(skip).Take(pagingRequest.PageSize).ToListAsync();
+            }
+            else
+            {
+                responseDto.ResponseData = await query.ToListAsync();
             }
 
             responseDto.Count = query.Count();

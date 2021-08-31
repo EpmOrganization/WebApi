@@ -31,19 +31,20 @@ namespace EPM.WebApi.Controllers
         [Route("getlist")]
         public async Task<ActionResult<ApiResponseWithData<List<UserDto>>>> Getlist([FromBody] PagingRequest pagingRequest)
         {
-            ApiResponseWithData<List<UserDto>> result = new ApiResponseWithData<List<UserDto>>();
+            ApiResponseWithData<List<UserDto>> result = new ApiResponseWithData<List<UserDto>>().Success();
 
             var responseDto =await _userService.GetPatgeListAsync(pagingRequest);
             if (responseDto != null)
             {
                 result.Data = responseDto.ResponseData;
                 result.Count = responseDto.Count;
-                return result.Success();
+                //return result.Success();
             }
             else
             {
-               return result.Fail();
+               result= result.Fail();
             }
+            return result;
         }
 
         /// <summary>

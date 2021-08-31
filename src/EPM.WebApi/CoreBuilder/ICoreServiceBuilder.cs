@@ -16,5 +16,10 @@ namespace EPM.WebApi.CoreBuilder
         /// 添加数据库连接配置
         /// </summary>
         void AddDbConfig();
+
+        /// <summary>
+        /// 添加跨域
+        /// </summary>
+        void AddCORS();
     }
 }

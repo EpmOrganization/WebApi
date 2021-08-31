@@ -73,8 +73,7 @@ namespace EPM.XUnitTest
             // Act
             var users = _userRepository.GetPatgeListAsync(new Model.ApiModel.PagingRequest()
             {
-                IsPaging=false,
-                SortField="LoginName"
+                IsPaging=true
             });
 
             // Assert

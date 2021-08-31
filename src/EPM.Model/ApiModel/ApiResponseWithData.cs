@@ -16,7 +16,7 @@ namespace EPM.Model.ApiModel
         /// </summary>
         public int Count { get; set; } = 0;
 
-        public new  ApiResponseWithData<T> Success()
+        public new ApiResponseWithData<T> Success()
         {
             return new ApiResponseWithData<T>()
             {
