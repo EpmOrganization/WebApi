@@ -1,7 +1,6 @@
 ﻿using EPM.IService.Service;
 using EPM.Model.ApiModel;
 using EPM.Model.DbModel;
-using EPM.Model.Enum;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -13,67 +12,73 @@ namespace EPM.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class DepartmentController : ControllerBase
+    public class RoleController : ControllerBase
     {
+        private readonly IRoleService _userService;
 
-        private readonly IDepartmentService _service;
-
-        public DepartmentController(IDepartmentService service)
+        public RoleController(IRoleService userService)
         {
-            _service = service;
+            _userService = userService;
         }
 
-
         /// <summary>
-        /// 获取部门信息
+        /// 获取所有角色信息
         /// </summary>
         /// <param name="searchRequestDto"></param>
         /// <returns></returns>
-        [HttpGet]
+        [HttpPost]
         [Route("getlist")]
-        public async Task<ActionResult<ApiResponseWithData<List<Department>>>> Getlist()
+        public async Task<ActionResult<ApiResponseWithData<List<Role>>>> Getlist([FromBody] PagingRequest pagingRequest)
         {
-            ApiResponseWithData<List<Department>> result = new ApiResponseWithData<List<Department>>().Success();
-            var list =await _service.GetAllListAsync(p=>p.IsDeleted==(int)DeleteFlag.NotDeleted);
-            result.Data = list.ToList();
-            result.Count = list.Count();
+            ApiResponseWithData<List<Role>> result = new ApiResponseWithData<List<Role>>().Success();
+
+            var responseDto = await _userService.GetPatgeListAsync(pagingRequest);
+            if (responseDto != null)
+            {
+                result.Data = responseDto.ToList();
+                result.Count = responseDto.Count();
+            }
+            else
+            {
+                result = result.Fail();
+            }
             return result;
         }
 
         /// <summary>
-        /// 新增部门
+        /// 新增角色
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<ActionResult<ApiResponse>> Post([FromBody] Department department)
+        public async Task<ActionResult<ApiResponse>> Post([FromBody] Role role)
         {
-            ValidateResult validateResult = await _service.AddAsync(department);
+            ValidateResult validateResult = await _userService.AddAsync(role);
             return validateResult.Code > 0 ? ApiResponse.Success() : ApiResponse.Fail();
         }
 
         /// <summary>
-        /// 修改部门信息
+        /// 修改角色信息
         /// </summary>
         /// <param name="user">用户实体</param>
         /// <returns></returns>
         [HttpPut]
-        public async Task<ActionResult<ApiResponse>> Put([FromBody] Department department)
+        public async Task<ActionResult<ApiResponse>> Put([FromBody] Role role)
         {
-            ValidateResult validateResult = await _service.UpdateAsync(department);
+            ValidateResult validateResult = await _userService.UpdateAsync(role);
             return validateResult.Code > 0 ? ApiResponse.Success() : ApiResponse.Fail();
         }
 
 
         /// <summary>
-        /// 删除部门
+        /// 删除角色
         /// </summary>
         /// <param name="id">用户id</param>
         /// <returns></returns>
         [HttpDelete]
         public async Task<ActionResult<ApiResponse>> Delete(Guid id)
         {
-            ValidateResult validateResult = await _service.DeleteAsync(id);
+            ValidateResult validateResult = await _userService.DeleteAsync(id);
             return validateResult.Code > 0 ? ApiResponse.Success() : ApiResponse.Fail();
         }
     }

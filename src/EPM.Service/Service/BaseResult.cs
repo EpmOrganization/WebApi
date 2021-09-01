@@ -6,7 +6,7 @@ namespace EPM.Service.Service
 {
     public class BaseResult
     {
-        public ValidateResult ReturnSuccess()
+        public static ValidateResult ReturnSuccess()
         {
             return new ValidateResult()
             {
@@ -15,7 +15,7 @@ namespace EPM.Service.Service
             };
         }
 
-        public ValidateResult ReturnFail()
+        public static ValidateResult ReturnFail()
         {
             return new ValidateResult()
             {
