@@ -23,5 +23,23 @@ namespace EPM.Service.Service
                 Msg = EnumHelper.GetEnumDesc(CustomerCode.Fail)
             };
         }
+
+        public static ValidateResult RoleAllot()
+        {
+            return new ValidateResult()
+            {
+                Code = 0,
+                Msg = "该角色已经分配给用户"
+            };
+        }
+
+        public static ValidateResult MenuHasBeenAssigned()
+        {
+            return new ValidateResult()
+            {
+                Code = 0,
+                Msg = "该菜单已被分配给某些角色，请取消分配后再进行删除"
+            };
+        }
     }
 }
