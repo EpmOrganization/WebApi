@@ -41,5 +41,14 @@ namespace EPM.Service.Service
                 Msg = "该菜单已被分配给某些角色，请取消分配后再进行删除"
             };
         }
+
+        public static ValidateResult ExistRole()
+        {
+            return new ValidateResult()
+            {
+                Code = 0,
+                Msg = "已存在同名的角色，修改角色失败"
+            };
+        }
     }
 }

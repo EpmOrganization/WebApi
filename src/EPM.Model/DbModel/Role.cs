@@ -29,9 +29,9 @@ namespace EPM.Model.DbModel
         public string HalfCheckeds { get; set; }
 
         /// <summary>
-        /// 这个值是从前端带过来的，表示创建的角色所拥有的功能RoleId集合
+        /// 这个值是从前端带过来的，表示创建的角色所拥有的菜单id集合
         /// </summary>
         [NotMapped]
-        public Guid[] AllottedRoles { get; set; }
+        public Guid[] AllottedMenus { get; set; }
     }
 }

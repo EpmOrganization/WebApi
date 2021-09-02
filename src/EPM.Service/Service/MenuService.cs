@@ -47,7 +47,7 @@ namespace EPM.Service.Service
         public async Task<ValidateResult> DeleteAsync(Guid id)
         {
             // 判断该菜单是否已经分配给角色
-            var details = await _roleMenuRepository.GetAllListAsync(p => p.MenuID == id && p.IsDeleted == (int)DeleteFlag.NotDeleted);
+            var details = await _roleMenuRepository.GetListAsync(p => p.MenuID == id && p.IsDeleted == (int)DeleteFlag.NotDeleted);
             if (details.Any())
             {
                 return BaseResult.MenuHasBeenAssigned();

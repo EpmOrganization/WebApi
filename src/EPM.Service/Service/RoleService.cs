@@ -62,27 +62,26 @@ namespace EPM.Service.Service
                 _repository.Add(entity);
 
                 // 添加角色对应菜单权限信息
-                if (entity.AllottedRoles != null && entity.AllottedRoles.Length > 0)
+                if (entity.AllottedMenus != null && entity.AllottedMenus.Length > 0)
                 {
-                    RoleMenu detail = null;
-                    foreach (Guid authorityId in entity.AllottedRoles)
+                    List<RoleMenu> list = new List<RoleMenu>();
+                    DateTime dt = DateTime.Now;
+                    foreach (Guid authorityID in entity.AllottedMenus)
                     {
-                        DateTime dt = DateTime.Now;
-                        detail = new RoleMenu()
+                        RoleMenu detail = new RoleMenu()
                         {
                             RoleID = entity.ID,
-                            MenuID = authorityId,
+                            MenuID = authorityID,
                             CreateTime = dt,
                             //CreateUser = loginInfo.LoginUser.Name,
                             CreateUser = "admin",
                             ID = Guid.NewGuid(),
                             UpdateTime = dt,
-                            //UpdateUser = loginInfo.LoginUser.Name
                             UpdateUser = "admin"
                         };
-                        // 添加Role对应权限信息
-                        _roleMenuRepository.Add(detail);
+                        list.Add(detail);
                     }
+                    _roleMenuRepository.AddBatch(list);
                 }
                 // 通过事务保存数据
                 return await _unitOfWork.SaveChangesAsync() > 0 ? BaseResult.ReturnSuccess() : BaseResult.ReturnFail();
@@ -123,7 +122,7 @@ namespace EPM.Service.Service
                 _repository.Update(role, updatedProperties);
 
                 // 获取角色对应菜单权限明细
-                RoleMenu[] details = (await _roleMenuRepository.GetAllListAsync(p => p.RoleID == id)).ToArray();
+                RoleMenu[] details = (await _roleMenuRepository.GetListAsync(p => p.RoleID == id)).ToArray();
                 if (details.Length > 0)
                 {
                     foreach (RoleMenu item in details)
@@ -153,9 +152,83 @@ namespace EPM.Service.Service
             return await _repository.GetPatgeListAsync(pagingRequest);
         }
 
-        public Task<ValidateResult> UpdateAsync(Role entity)
+        public async Task<ValidateResult> UpdateAsync(Role entity)
         {
-            throw new NotImplementedException();
+            // 从传递的token中获取用户信息
+            //LoginInfo loginInfo = await _tokenService.GetLoginInfoByToken();
+
+            var role = await _repository.GetEntityAsync(p => p.Name == entity.Name && p.ID != entity.ID && p.IsDeleted == (int)DeleteFlag.NotDeleted);
+            if (role != null)
+            {
+                return BaseResult.ExistRole();
+            }
+            else
+            {
+                // 查询角色信息
+                role = await _repository.GetEntityAsync(p => p.ID == entity.ID && p.IsDeleted == (int)DeleteFlag.NotDeleted);
+
+                role.Description = entity.Description;
+                role.UpdateTime = DateTime.Now;
+                //role.UpdateUser = loginInfo.LoginUser.Name;
+                role.UpdateUser = "admin";
+                role.Name = entity.Name;
+                role.HalfCheckeds = entity.HalfCheckeds;
+
+                // 更新角色
+                Expression<Func<Role, object>>[] up = {
+                    p=>p.HalfCheckeds,
+                    p=>p.Description,
+                    p=>p.Name,
+                    p=>p.UpdateTime,
+                    p=>p.UpdateUser
+                };
+                _repository.Update(role, up);
+
+                // 查询角色对应权限明细
+                var role_details = await _roleMenuRepository.GetListAsync(t => t.RoleID == entity.ID);
+                // 先删除该角色对应的权限明细信息
+                if (role_details.Any())
+                {
+                    foreach (var item in role_details)
+                    {
+                        item.IsDeleted = (int)DeleteFlag.Deleted;
+                        item.UpdateTime = DateTime.Now;
+                        //item.UpdateUser = loginInfo.LoginUser.Name;
+                        item.UpdateUser = "admin";
+                        Expression<Func<RoleMenu, object>>[] updatedPropertiesDetail =
+                        {
+                            p=>p.IsDeleted,
+                            p=>p.UpdateTime,
+                            p=>p.UpdateUser
+                        };
+                        _roleMenuRepository.Update(item, updatedPropertiesDetail);
+                    }
+                }
+
+                // 插入新的角色权限明细
+                if (entity.AllottedMenus != null && entity.AllottedMenus.Length > 0)
+                {
+                    List<RoleMenu> list = new List<RoleMenu>();
+                    DateTime dt = DateTime.Now;
+                    foreach (Guid authorityID in entity.AllottedMenus)
+                    {
+                        RoleMenu detail = new RoleMenu()
+                        {
+                            RoleID = entity.ID,
+                            MenuID = authorityID,
+                            CreateTime = dt,
+                            //CreateUser = loginInfo.LoginUser.Name,
+                            CreateUser = "admin",
+                            ID = Guid.NewGuid(),
+                            UpdateTime = dt,
+                            UpdateUser = "admin"
+                        };
+                        list.Add(detail);
+                    }
+                    _roleMenuRepository.AddBatch(list);
+                }
+                return await _unitOfWork.SaveChangesAsync() > 0 ? BaseResult.ReturnSuccess() : BaseResult.ReturnFail();
+            }
         }
     }
 }
