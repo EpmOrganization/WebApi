@@ -29,6 +29,8 @@ namespace EPM.WebApi.Extensions
             servicebuilder.AddSwaggerGenerator();
 
             servicebuilder.AddCORS();
+
+            servicebuilder.AddOther();
         }
 
 

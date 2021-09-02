@@ -21,5 +21,7 @@ namespace EPM.WebApi.CoreBuilder
         /// 添加跨域
         /// </summary>
         void AddCORS();
+
+        void AddOther();
     }
 }

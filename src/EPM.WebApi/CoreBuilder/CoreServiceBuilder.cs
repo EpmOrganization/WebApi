@@ -1,4 +1,5 @@
 ﻿using EPM.EFCore.Context;
+using EPM.Framework.Data;
 using EPM.Model.ConfigModel;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -50,6 +51,18 @@ namespace EPM.WebApi.CoreBuilder
                 options.UseMySql(connectionString: connectionStrings.DbConnection,serverVersion:serverVersion);
             });
         }
+
+        public void AddOther()
+        {
+            #region 解决返回时间带T的问题
+            _services.AddControllers().AddJsonOptions(configure =>
+            {
+                configure.JsonSerializerOptions.Converters.Add(new DatetimeJsonConverter());
+
+            });
+            #endregion
+        }
+
         public void AddSwaggerGenerator()
         {
             _services.AddSwaggerGen(c =>
