@@ -1,6 +1,7 @@
 ﻿using EPM.IService.Service;
 using EPM.Model.ApiModel;
 using EPM.Model.DbModel;
+using EPM.Model.Dto.Response.DeptResponse;
 using EPM.Model.Enum;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -23,20 +24,22 @@ namespace EPM.WebApi.Controllers
             _service = service;
         }
 
-
-        /// <summary>
-        /// 获取部门信息
-        /// </summary>
-        /// <param name="searchRequestDto"></param>
-        /// <returns></returns>
         [HttpGet]
         [Route("getlist")]
-        public async Task<ActionResult<ApiResponseWithData<List<Department>>>> Getlist()
+        public async Task<ActionResult<ApiResponseWithData<List<DeptResponseDto>>>> Getlist()
         {
-            ApiResponseWithData<List<Department>> result = new ApiResponseWithData<List<Department>>().Success();
-            var list =await _service.GetAllListAsync(p=>p.IsDeleted==(int)DeleteFlag.NotDeleted);
-            result.Data = list.ToList();
-            result.Count = list.Count();
+            ApiResponseWithData<List<DeptResponseDto>> result = new ApiResponseWithData<List<DeptResponseDto>>().Success();
+
+            var responseDto = await _service.GetList();
+            if (responseDto != null)
+            {
+                result.Data = responseDto.ToList();
+                result.Count = responseDto.Count();
+            }
+            else
+            {
+                result = result.Fail();
+            }
             return result;
         }
 

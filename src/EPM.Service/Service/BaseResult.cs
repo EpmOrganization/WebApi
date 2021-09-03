@@ -50,5 +50,14 @@ namespace EPM.Service.Service
                 Msg = "已存在同名的角色，修改角色失败"
             };
         }
+
+        public static ValidateResult ExistDepartment()
+        {
+            return new ValidateResult()
+            {
+                Code = 0,
+                Msg = "已存在同名的部门名称，修改失败"
+            };
+        }
     }
 }
