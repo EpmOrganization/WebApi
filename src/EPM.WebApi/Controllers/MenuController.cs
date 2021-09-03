@@ -82,5 +82,20 @@ namespace EPM.WebApi.Controllers
             ValidateResult validateResult = await _service.DeleteAsync(id);
             return validateResult.Code > 0 ? ApiResponse.Success() : ApiResponse.Fail();
         }
+
+
+        /// <summary>
+        /// 用户登录以后获取左侧权限菜单
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("GetAuthorize")]
+        public async Task<ActionResult<ApiResponseWithData<List<Menu>>>> GetAuthorize()
+        {
+            ApiResponseWithData<List<Menu>> result = new ApiResponseWithData<List<Menu>>().Success();
+            IEnumerable<Menu> list = await _service.GetAuthorizeAsync();
+            result.Data = list.ToList();
+            return result;
+        }
     }
 }

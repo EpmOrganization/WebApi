@@ -143,5 +143,54 @@ namespace EPM.Service.Service
         {
             throw new NotImplementedException();
         }
+
+        public async Task<IEnumerable<Menu>> GetAuthorizeAsync()
+        {
+            List<Menu> list = new List<Menu>();
+            // 从token获取当前登录用户
+            // var currentUser = await _tokenService.GetUserByToken();
+            //LoginInfo loginInfo = await _tokenService.GetLoginInfoByToken();
+
+            //LoginInfo loginInfo = null;
+
+            #region 去掉Redis缓存
+            //// 从缓存中获取对应的角色权限明细数据
+            //var roleDetails= _redis.StringGet(loginInfo.LoginUser.RoleID.ToString());
+            //if(!string.IsNullOrEmpty(roleDetails))
+            //{
+            //    // 反序列化
+            //   list= JsonConvert.DeserializeObject<List<ActionAuthority>>(roleDetails);
+            //}
+            //else
+            //{
+            //    // 根据用户的角色ID获取角色权限明细
+            //    var roleAuthorityDetail = await _roleAuthorityDetailRepository.GetListAsync(p => p.RoleId == loginInfo.LoginUser.RoleID && p.IsDeleted == (int)DeleteFlag.NotDelete);
+            //    // 根据权限ID获取具体权限信息
+            //    foreach (RoleAuthorityDetail item in roleAuthorityDetail)
+            //    {
+            //        var actionAuthority = await _actionRepository.GetEntityAsync(p => p.ID == item.AuthorityId);
+            //        list.Add(actionAuthority);
+            //    }
+            //    // 将查询结果存入Redis缓存
+            //    _redis.StringSet(loginInfo.LoginUser.RoleID.ToString(), JsonConvert.SerializeObject(list));
+            //} 
+            #endregion
+
+            // 根据用户的角色ID获取角色权限明细
+            //var roleAuthorityDetail = await _roleMenuRepository.GetListAsync(p => p.RoleID == loginInfo.LoginUser.RoleID && p.IsDeleted == (int)DeleteFlag.NotDeleted);
+
+            var roleAuthorityDetail = await _roleMenuRepository.GetListAsync(p => p.RoleID == Guid.Parse("81e2c6b0-6ab3-4fbb-923c-c9a1a8b4cfa4") && p.IsDeleted == (int)DeleteFlag.NotDeleted);
+            // 根据权限ID获取具体权限信息
+            foreach (RoleMenu item in roleAuthorityDetail)
+            {
+                var actionAuthority = await _menuRepository.GetEntityAsync(p => p.ID == item.MenuID && p.IsDeleted == (int)DeleteFlag.NotDeleted);
+                if (actionAuthority != null)
+                {
+                    list.Add(actionAuthority);
+                }
+            }
+
+            return list;
+        }
     }
 }

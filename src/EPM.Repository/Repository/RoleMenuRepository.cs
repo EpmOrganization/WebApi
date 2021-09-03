@@ -32,7 +32,14 @@ namespace EPM.Repository.Repository
 
         public void Update(RoleMenu entity, Expression<Func<RoleMenu, object>>[] updatedProperties)
         {
-            throw new NotImplementedException();
+            _appDbContext.Set<RoleMenu>().Attach(entity);
+            if (updatedProperties.Any())
+            {
+                foreach (var property in updatedProperties)
+                {
+                    _appDbContext.Entry(entity).Property(property).IsModified = true;
+                }
+            }
         }
     }
 }

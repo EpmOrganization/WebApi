@@ -2,6 +2,7 @@
 using EPM.IRepository.Repository;
 using EPM.Model.ApiModel;
 using EPM.Model.DbModel;
+using EPM.Model.Enum;
 using EPM.Repository.Base;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -22,6 +23,7 @@ namespace EPM.Repository.Repository
         public async Task<IEnumerable<Role>> GetPatgeListAsync(PagingRequest pagingRequest)
         {
             var query = from r in _dbContext.Roles
+                        where r.IsDeleted == (int)DeleteFlag.NotDeleted
                         select new Role
                         {
                             Name=r.Name,

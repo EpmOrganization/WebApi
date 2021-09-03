@@ -147,6 +147,11 @@ namespace EPM.Service.Service
             }
         }
 
+        public async Task<IEnumerable<Role>> GetAllListAsync(Expression<Func<Role, bool>> predicate)
+        {
+            return await _repository.GetAllListAsync(predicate);
+        }
+
         public async Task<IEnumerable<Role>> GetPatgeListAsync(PagingRequest pagingRequest)
         {
             return await _repository.GetPatgeListAsync(pagingRequest);

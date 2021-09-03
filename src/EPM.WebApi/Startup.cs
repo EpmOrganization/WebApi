@@ -5,6 +5,7 @@ using EPM.Model.ConfigModel;
 using EPM.WebApi.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -41,6 +42,7 @@ namespace EPM.WebApi
             #region ÅúÁ¿×¢Èë
             services.RegisterService(ServiceLifetime.Scoped, new string[] { "EPM.Repository", "EPM.Service" });
             services.AddScoped<IUnitOfWork, UnitOfWork<AppDbContext>>();
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             #endregion
         }
 

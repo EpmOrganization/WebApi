@@ -1,6 +1,7 @@
 ﻿using EPM.IService.Service;
 using EPM.Model.ApiModel;
 using EPM.Model.DbModel;
+using EPM.Model.Enum;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -14,15 +15,15 @@ namespace EPM.WebApi.Controllers
     [ApiController]
     public class RoleController : ControllerBase
     {
-        private readonly IRoleService _userService;
+        private readonly IRoleService _service;
 
-        public RoleController(IRoleService userService)
+        public RoleController(IRoleService service)
         {
-            _userService = userService;
+            _service = service;
         }
 
         /// <summary>
-        /// 获取所有角色信息
+        /// 分页获取所有角色信息
         /// </summary>
         /// <param name="searchRequestDto"></param>
         /// <returns></returns>
@@ -32,7 +33,7 @@ namespace EPM.WebApi.Controllers
         {
             ApiResponseWithData<List<Role>> result = new ApiResponseWithData<List<Role>>().Success();
 
-            var responseDto = await _userService.GetPatgeListAsync(pagingRequest);
+            var responseDto = await _service.GetPatgeListAsync(pagingRequest);
             if (responseDto != null)
             {
                 result.Data = responseDto.ToList();
@@ -46,6 +47,29 @@ namespace EPM.WebApi.Controllers
         }
 
         /// <summary>
+        /// 获取所有角色信息列表
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<ActionResult<ApiResponseWithData<List<Role>>>> Get()
+        {
+            ApiResponseWithData<List<Role>> result = new ApiResponseWithData<List<Role>>().Success();
+
+            var responseDto = await _service.GetAllListAsync(p=>p.IsDeleted==(int)DeleteFlag.NotDeleted);
+            if (responseDto != null)
+            {
+                result.Data = responseDto.ToList();
+                result.Count = responseDto.Count();
+            }
+            else
+            {
+                result = result.Fail();
+            }
+
+            return result;
+        }
+
+        /// <summary>
         /// 新增角色
         /// </summary>
         /// <param name="user"></param>
@@ -53,7 +77,7 @@ namespace EPM.WebApi.Controllers
         [HttpPost]
         public async Task<ActionResult<ApiResponse>> Post([FromBody] Role role)
         {
-            ValidateResult validateResult = await _userService.AddAsync(role);
+            ValidateResult validateResult = await _service.AddAsync(role);
             return validateResult.Code > 0 ? ApiResponse.Success() : ApiResponse.Fail();
         }
 
@@ -65,7 +89,7 @@ namespace EPM.WebApi.Controllers
         [HttpPut]
         public async Task<ActionResult<ApiResponse>> Put([FromBody] Role role)
         {
-            ValidateResult validateResult = await _userService.UpdateAsync(role);
+            ValidateResult validateResult = await _service.UpdateAsync(role);
             return validateResult.Code > 0 ? ApiResponse.Success() : ApiResponse.Fail();
         }
 
@@ -78,7 +102,7 @@ namespace EPM.WebApi.Controllers
         [HttpDelete]
         public async Task<ActionResult<ApiResponse>> Delete(Guid id)
         {
-            ValidateResult validateResult = await _userService.DeleteAsync(id);
+            ValidateResult validateResult = await _service.DeleteAsync(id);
             return validateResult.Code > 0 ? ApiResponse.Success() : ApiResponse.Fail();
         }
     }

@@ -12,5 +12,7 @@ namespace EPM.IService.Service
     public interface IMenuService : IBaseService<Menu>
     {
         Task<IEnumerable<MenuResponseDto>> GetList();
+
+        Task<IEnumerable<Menu>> GetAuthorizeAsync();
     }
 }

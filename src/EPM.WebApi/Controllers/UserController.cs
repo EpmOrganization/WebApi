@@ -38,7 +38,6 @@ namespace EPM.WebApi.Controllers
             {
                 result.Data = responseDto.ResponseData;
                 result.Count = responseDto.Count;
-                //return result.Success();
             }
             else
             {
@@ -82,6 +81,31 @@ namespace EPM.WebApi.Controllers
         {
             ValidateResult validateResult = await _userService.DeleteAsync(id);
             return validateResult.Code > 0 ? ApiResponse.Success() : ApiResponse.Fail();
+        }
+
+        /// <summary>
+        /// 获取当前登录用户信息
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("GetCurrentUser")]
+        public async Task<ActionResult<ApiResponseWithData<User>>> GetCurrentUser()
+        {
+            ApiResponseWithData<User> result = new ApiResponseWithData<User>().Success();
+            // User currentUser = await _tokenService.GetUserByToken();
+            //LoginInfo loginInfo = await _tokenService.GetLoginInfoByToken();
+            //result.ResultCode = ResultCode.Success;
+            //result.ResultMsg = EnumHelper.GetEnumDesc(ResultCode.Success);
+
+            LoginInfo loginInfo = new LoginInfo()
+            {
+                LoginUser = new User()
+                {
+                    Name="测试"
+                }
+            };
+            result.Data = loginInfo.LoginUser;
+            return result;
         }
     }
 }
