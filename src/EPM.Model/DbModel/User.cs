@@ -33,11 +33,6 @@ namespace EPM.Model.DbModel
         public Guid RoleID { get; set; }
 
         /// <summary>
-        /// 备注
-        /// </summary>
-        public string Description { get; set; }
-
-        /// <summary>
         /// 邮箱地址
         /// </summary>
         public string EmailAddress { get; set; }

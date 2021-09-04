@@ -52,7 +52,6 @@ namespace EPM.Service.Service
 
         public async Task<ValidateResult> DeleteAsync(Guid id)
         {
-            ValidateResult validateResult = new ValidateResult();
             var user = await _repository.GetEntityAsync(p => p.ID == id);
             // 
             user.IsDeleted = (int)DeleteFlag.Deleted;
@@ -68,9 +67,7 @@ namespace EPM.Service.Service
 
             _repository.Update(user, updatedProperties);
             // 保存数据
-            int count = await _unitOfWork.SaveChangesAsync();
-            validateResult = count > 0 ? ReturnSuccess() : ReturnFail();
-            return validateResult;
+           return await _unitOfWork.SaveChangesAsync() > 0 ? ReturnSuccess() : ReturnFail();
         }
 
         public Task<IEnumerable<User>> GetAllListAsync(Expression<Func<User, bool>> predicate)

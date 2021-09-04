@@ -41,5 +41,10 @@ namespace EPM.Model.DbModel.Base
         /// 修改时间
         /// </summary>
         public DateTime UpdateTime { get; set; } = DateTime.Now;
+
+        /// <summary>
+        /// 备注
+        /// </summary>
+        public string Description { get; set; }
     }
 }

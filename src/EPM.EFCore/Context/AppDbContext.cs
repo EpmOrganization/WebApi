@@ -36,6 +36,8 @@ namespace EPM.EFCore.Context
 
         public DbSet<RoleMenu> RoleMenus { get; set; }
 
+        public DbSet<WorkItem> WorkItems { get; set; }
+
         #endregion
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
