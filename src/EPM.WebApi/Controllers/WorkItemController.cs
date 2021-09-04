@@ -1,6 +1,7 @@
 ﻿using EPM.IService.Service;
 using EPM.Model.ApiModel;
 using EPM.Model.DbModel;
+using EPM.Model.Dto.Request.WorkItemRequest;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -29,11 +30,11 @@ namespace EPM.WebApi.Controllers
         /// <returns></returns>
         [HttpPost]
         [Route("getlist")]
-        public async Task<ActionResult<ApiResponseWithData<List<WorkItem>>>> Getlist([FromBody] PagingRequest pagingRequest)
+        public async Task<ActionResult<ApiResponseWithData<List<WorkItem>>>> Getlist([FromBody] WorkItemRequestDto pagingRequest)
         {
             ApiResponseWithData<List<WorkItem>> result = new ApiResponseWithData<List<WorkItem>>().Success();
 
-            var responseDto = await _service.GetPatgeListAsync(pagingRequest);
+            var responseDto = await _service.GetPageListAsync(pagingRequest);
             if (responseDto != null)
             {
                 result.Data = responseDto.ResponseData;

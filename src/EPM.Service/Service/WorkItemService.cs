@@ -3,6 +3,7 @@ using EPM.IRepository.Repository;
 using EPM.IService.Service;
 using EPM.Model.ApiModel;
 using EPM.Model.DbModel;
+using EPM.Model.Dto.Request.WorkItemRequest;
 using EPM.Model.Dto.Response.WorkItemResponse;
 using System;
 using System.Collections.Generic;
@@ -36,9 +37,37 @@ namespace EPM.Service.Service
             return await _repository.GetAllListAsync(null);
         }
 
-        public async Task<WorkItemResponseDto> GetPatgeListAsync(PagingRequest pagingRequest)
+        //public async Task<WorkItemResponseDto> GetPatgeListAsync(PagingRequest pagingRequest)
+        //{
+        //    return await _repository.GetPatgeListAsync(pagingRequest);
+        //}
+
+        public async Task<WorkItemResponseDto> GetPageListAsync(WorkItemRequestDto pagingRequest)
         {
-            return await _repository.GetPatgeListAsync(pagingRequest);
+            var dto= await _repository.GetListAsync(pagingRequest);
+            var newWrokItems = new List<WorkItem>();
+
+            WorkItemResponseDto newResponseDto = new WorkItemResponseDto();
+            for (int i = 1; i <= DateTime.DaysInMonth(pagingRequest.Year, pagingRequest.Month); i++)
+            {
+
+                var beginDay = DateTime.Parse($"{pagingRequest.Year}-{pagingRequest.Month}-{i} 00:00:00.000");
+                var endDay = DateTime.Parse($"{pagingRequest.Year}-{pagingRequest.Month}-{i} 23:59:59.999");
+                var oneDayWorkItem = dto.ResponseData.SingleOrDefault(s => s.RecordDate >= beginDay && s.RecordDate <= endDay);
+                if (oneDayWorkItem == null)
+                {
+                    dto.ResponseData.Add(new WorkItem() { RecordDate = beginDay });
+                    newWrokItems.Add(new WorkItem() { RecordDate = beginDay });
+                }
+                //else
+                //{
+                //    newWrokItems.Add(oneDayWorkItem);
+                //}
+            }
+            return dto;
+
+
+            //return await _repository.GetListAsync(pagingRequest);
         }
 
         public async Task<ValidateResult> UpdateAsync(WorkItem entity)

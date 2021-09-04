@@ -1,5 +1,6 @@
 ﻿using EPM.Model.ApiModel;
 using EPM.Model.DbModel;
+using EPM.Model.Dto.Request.WorkItemRequest;
 using EPM.Model.Dto.Response.WorkItemResponse;
 using System;
 using System.Collections.Generic;
@@ -26,7 +27,9 @@ namespace EPM.IService.Service
         Task<ValidateResult> UpdateAsync(WorkItem entity);
 
 
-        Task<WorkItemResponseDto> GetPatgeListAsync(PagingRequest pagingRequest);
+        //Task<WorkItemResponseDto> GetPatgeListAsync(PagingRequest pagingRequest);
+
+        Task<WorkItemResponseDto> GetPageListAsync(WorkItemRequestDto pagingRequest);
 
         Task<IEnumerable<WorkItem>> GetAll();
     }
