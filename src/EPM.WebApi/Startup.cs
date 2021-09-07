@@ -1,7 +1,7 @@
 using EPM.EFCore.Context;
 using EPM.EFCore.Uow;
 using EPM.Framework.Extensions;
-using EPM.Model.ConfigModel;
+using EPM.Framework.Settings;
 using EPM.WebApi.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.OpenApi.Models;
 
 namespace EPM.WebApi
 {
@@ -34,6 +33,8 @@ namespace EPM.WebApi
 
             services.AddControllers();
 
+            // 过滤器
+            //services.AddControllers(options => options.Filters.Add(typeof(CustomerResultFilter)));
 
             #region 扩展方法
             services.AddCoreServiceProvider(Configuration);
@@ -67,6 +68,8 @@ namespace EPM.WebApi
             #endregion
 
             app.UseAuthorization();
+
+            //app.UseMiddleware(typeof(CustomerTestMiddleware));
 
             app.UseEndpoints(endpoints =>
             {

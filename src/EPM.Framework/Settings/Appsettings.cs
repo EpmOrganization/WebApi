@@ -1,10 +1,9 @@
-﻿using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using EPM.Framework.Cache;
+using EPM.Model.ConfigModel;
+using Microsoft.Extensions.Configuration;
 using System.Threading;
 
-namespace EPM.Model.ConfigModel
+namespace EPM.Framework.Settings
 {
     /// <summary>
     /// 配置类，单例模式
@@ -40,6 +39,17 @@ namespace EPM.Model.ConfigModel
         /// 
         /// </summary>
         public string AESKey { get; set; }
+
+        private string _RedisConnStr;
+        public string RedisConnStr
+        {
+            get { return _RedisConnStr; }
+            set
+            {
+                _RedisConnStr = value;
+                RedisCoreHelper.SetRedisConnStr(value);
+            }
+        }
 
         #endregion
 
