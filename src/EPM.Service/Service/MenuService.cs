@@ -172,12 +172,7 @@ namespace EPM.Service.Service
             #endregion
 
             // 根据用户的角色ID获取角色权限明细
-            //var roleAuthorityDetail = await _roleMenuRepository.GetListAsync(p => p.RoleID == loginInfo.LoginUser.RoleID && p.IsDeleted == (int)DeleteFlag.NotDeleted);
-
-            // 管理员
-            //var roleAuthorityDetail = await _roleMenuRepository.GetListAsync(p => p.RoleID == Guid.Parse("d10f7e9f-d075-443d-bcd3-ef6f64903d92") && p.IsDeleted == (int)DeleteFlag.NotDeleted);
-
-            var roleAuthorityDetail = await _roleMenuRepository.GetListAsync(p => p.RoleID == Guid.Parse("81e2c6b0-6ab3-4fbb-923c-c9a1a8b4cfa4") && p.IsDeleted == (int)DeleteFlag.NotDeleted);
+            var roleAuthorityDetail = await _roleMenuRepository.GetListAsync(p => p.RoleID == loginInfo.LoginUser.RoleID && p.IsDeleted == (int)DeleteFlag.NotDeleted);
             // 根据权限ID获取具体权限信息
             foreach (RoleMenu item in roleAuthorityDetail)
             {

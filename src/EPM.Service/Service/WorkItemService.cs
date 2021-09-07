@@ -35,6 +35,8 @@ namespace EPM.Service.Service
             LoginInfo loginInfo = await _tokenService.GetLoginInfoByToken();
             entity.CreateUser = entity.UpdateUser = loginInfo.LoginUser.Name;
             entity.CreateTime = entity.UpdateTime = DateTime.Now;
+            entity.CreateUserID = loginInfo.LoginUser.ID;
+            entity.IsRecord = 1;
             _repository.Add(entity);
             return await _unitOfWork.SaveChangesAsync() > 0 ? ReturnSuccess():ReturnFail();
         }
@@ -46,6 +48,9 @@ namespace EPM.Service.Service
 
         public async Task<WorkItemResponseDto> GetPageListAsync(WorkItemRequestDto pagingRequest)
         {
+            // 从传递的token中获取用户信息
+            LoginInfo loginInfo = await _tokenService.GetLoginInfoByToken();
+            pagingRequest.UserID = loginInfo.LoginUser.ID;
             var dto= await _repository.GetListAsync(pagingRequest);
             var newWrokItems = new List<WorkItem>();
 
@@ -58,7 +63,7 @@ namespace EPM.Service.Service
                 var oneDayWorkItem = dto.ResponseData.SingleOrDefault(s => s.RecordDate >= beginDay && s.RecordDate <= endDay);
                 if (oneDayWorkItem == null)
                 {
-                    dto.ResponseData.Add(new WorkItem() { RecordDate = beginDay });
+                    dto.ResponseData.Add(new WorkItem() { RecordDate = beginDay,IsRecord=0 });
                     newWrokItems.Add(new WorkItem() { RecordDate = beginDay });
                 }
             }

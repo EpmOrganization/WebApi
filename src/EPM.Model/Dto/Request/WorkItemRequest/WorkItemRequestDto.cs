@@ -10,5 +10,7 @@ namespace EPM.Model.Dto.Request.WorkItemRequest
         public int Year { get; set; }
 
         public int Month { get; set; }
+
+        public Guid? UserID { get; set; }
     }
 }

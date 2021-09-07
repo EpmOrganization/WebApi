@@ -16,5 +16,12 @@ namespace EPM.Model.DbModel
         /// 工作日期
         /// </summary>
         public DateTime RecordDate {get; set;}
+
+        public Guid CreateUserID { get; set; }
+
+        /// <summary>
+        /// 0：未记录 1：已记录
+        /// </summary>
+        public int IsRecord { get; set; }
     }
 }

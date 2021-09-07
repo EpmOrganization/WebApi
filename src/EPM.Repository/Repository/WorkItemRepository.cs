@@ -34,15 +34,15 @@ namespace EPM.Repository.Repository
                             UpdateTime = u.UpdateTime,
                             UpdateUser = u.UpdateUser,
                             Description = u.Description,
-                            WorkContent=u.WorkContent,
-                            RecordDate=u.RecordDate
+                            WorkContent = u.WorkContent,
+                            RecordDate = u.RecordDate
                         };
 
             // 分页查询
             if (pagingRequest.IsPaging)
             {
                 var skip = (pagingRequest.PageIndex - 1) * pagingRequest.PageSize;
-                responseDto.ResponseData= await query
+                responseDto.ResponseData = await query
                     .Skip(skip).Take(pagingRequest.PageSize).ToListAsync();
             }
             else
@@ -63,7 +63,8 @@ namespace EPM.Repository.Repository
             var beginDT = DateTime.Parse($"{pagingRequest.Year}-{pagingRequest.Month}-01 00:00:00.000");
             var endDT = DateTime.Parse($"{pagingRequest.Year}-{pagingRequest.Month}-{DateTime.DaysInMonth(pagingRequest.Year, pagingRequest.Month)} 23:59:59.999");
             var query = from u in _dbContext.WorkItems
-                        where u.RecordDate >=beginDT && u.RecordDate<=endDT
+                        where u.RecordDate >= beginDT && u.RecordDate <= endDT
+                        && u.CreateUserID == pagingRequest.UserID
                         select new WorkItem
                         {
                             ClusterID = u.ClusterID,
@@ -74,7 +75,9 @@ namespace EPM.Repository.Repository
                             UpdateUser = u.UpdateUser,
                             Description = u.Description,
                             WorkContent = u.WorkContent,
-                            RecordDate = u.RecordDate
+                            RecordDate = u.RecordDate,
+                            CreateUserID = u.CreateUserID,
+                            IsRecord = u.IsRecord
                         };
 
             // 分页查询

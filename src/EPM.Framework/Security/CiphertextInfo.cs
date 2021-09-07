@@ -17,7 +17,7 @@ namespace EPM.Framework.Security
         /// <summary>
         /// 请求数据
         /// </summary>
-        public string SData { get; set; }
+        public string Data { get; set; }
 
         /// <summary>
         /// 签名  MD5 32位小写
@@ -26,10 +26,10 @@ namespace EPM.Framework.Security
 
         public string Encrypt()
         {
-            Sign = MD5Utility.Get32LowerMD5(SData);
+            Sign = MD5Utility.Get32LowerMD5(Data);
             string key = MD5Utility.Get32LowerMD5(Sign);
             string iv = MD5Utility.Get16LowerMD5(Timestamp.ToString());
-            string result = AESUtility.AESEncrypt(SData, key, iv);
+            string result = AESUtility.AESEncrypt(Data, key, iv);
 
             return JsonConvert.SerializeObject(new
             {
@@ -43,7 +43,7 @@ namespace EPM.Framework.Security
         {
             string key = MD5Utility.Get32LowerMD5(Sign);
             string iv = MD5Utility.Get16LowerMD5(Timestamp.ToString());
-            string result = AESUtility.AESDecrypt(SData, key, iv);
+            string result = AESUtility.AESDecrypt(Data, key, iv);
             return result;
         }
     }
