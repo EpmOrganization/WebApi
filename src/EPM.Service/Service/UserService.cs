@@ -17,18 +17,21 @@ namespace EPM.Service.Service
     {
         private readonly IUserRepository _repository;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly ITokenService _tokenService;
 
-        public UserService(IUserRepository repository, IUnitOfWork unitOfWork)
+        public UserService(IUserRepository repository, IUnitOfWork unitOfWork,
+            ITokenService tokenService)
         {
             _repository = repository;
             _unitOfWork = unitOfWork;
+            _tokenService = tokenService;
         }
 
         public async Task<ValidateResult> AddAsync(User entity)
         {
             ValidateResult validateResult = new ValidateResult();
             // 从传递的token中获取用户信息
-            //LoginInfo loginInfo = await _tokenService.GetLoginInfoByToken();
+            LoginInfo loginInfo = await _tokenService.GetLoginInfoByToken();
             // 判断是否已经存在要新增的用户
             User user = await _repository.GetEntityAsync(p => p.LoginName == entity.LoginName && p.IsDeleted == (int)DeleteFlag.NotDeleted && p.Status == (int)UserStatus.Normal);
             if (user != null)
@@ -38,7 +41,7 @@ namespace EPM.Service.Service
             }
             else
             {
-                entity.CreateUser = entity.UpdateUser = "admin";
+                entity.CreateUser = entity.UpdateUser = loginInfo.LoginUser.Name;
                 entity.Password = MD5Helper.Get32LowerMD5(entity.Password);
                 entity.LoginErrorCount = 0;
                 _repository.Add(entity);
@@ -52,11 +55,13 @@ namespace EPM.Service.Service
 
         public async Task<ValidateResult> DeleteAsync(Guid id)
         {
+            // 从传递的token中获取用户信息
+            LoginInfo loginInfo = await _tokenService.GetLoginInfoByToken();
             var user = await _repository.GetEntityAsync(p => p.ID == id);
             // 
             user.IsDeleted = (int)DeleteFlag.Deleted;
             user.UpdateTime = DateTime.Now;
-            user.UpdateUser = "admin";
+            user.UpdateUser = loginInfo.LoginUser.Name;
 
             Expression<Func<User, object>>[] updatedProperties =
             {
@@ -82,7 +87,8 @@ namespace EPM.Service.Service
 
         public async Task<ValidateResult> UpdateAsync(User entity)
         {
-            ValidateResult validateResult = new ValidateResult();
+            // 从传递的token中获取用户信息
+            LoginInfo loginInfo = await _tokenService.GetLoginInfoByToken();
             var user = await _repository.GetEntityAsync(p => p.ID == entity.ID);
             user.Name = entity.Name;
             user.MobileNumber = entity.MobileNumber;
@@ -91,7 +97,7 @@ namespace EPM.Service.Service
             user.DepartmentID = entity.DepartmentID;
             user.RoleID = entity.RoleID;
             user.UpdateTime = DateTime.Now;
-            user.UpdateUser = "admin";
+            user.UpdateUser = loginInfo.LoginUser.Name;
             // 用表达式树，更新部分字段
             Expression<Func<User, object>>[] updatedProperties =
             {
@@ -108,9 +114,7 @@ namespace EPM.Service.Service
             };
             _repository.Update(user, updatedProperties);
             // 保存数据
-            int count = await _unitOfWork.SaveChangesAsync();
-            validateResult = count > 0 ? ReturnSuccess() : ReturnFail();
-            return validateResult;
+            return await _unitOfWork.SaveChangesAsync() > 0 ? ReturnSuccess() : ReturnFail();
         }
 
     }

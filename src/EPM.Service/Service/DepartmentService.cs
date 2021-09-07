@@ -18,15 +18,19 @@ namespace EPM.Service.Service
     {
         private readonly IDepartmentRepository _repository;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly ITokenService _tokenService;
 
-        public DepartmentService(IDepartmentRepository repository, IUnitOfWork unitOfWork)
+        public DepartmentService(IDepartmentRepository repository, IUnitOfWork unitOfWork,
+            ITokenService tokenService)
         {
             _repository = repository;
             _unitOfWork = unitOfWork;
+            _tokenService = tokenService;
         }
 
         public async Task<ValidateResult> AddAsync(Department entity)
         {
+
             // 判断是否已存在相同名称的部门
             var dept = await _repository.GetEntityAsync(p => p.Name == entity.Name && p.IsDeleted==(int)DeleteFlag.NotDeleted);
             if(null !=dept)
@@ -35,9 +39,11 @@ namespace EPM.Service.Service
             }
             else
             {
+                // 从传递的token中获取用户信息
+                LoginInfo loginInfo = await _tokenService.GetLoginInfoByToken();
                 entity.ID = Guid.NewGuid();
                 entity.CreateTime = entity.UpdateTime = DateTime.Now;
-                entity.CreateUser = entity.UpdateUser = "admin";
+                entity.CreateUser = entity.UpdateUser = loginInfo.LoginUser.Name;
                 _repository.Add(entity);
                 return await _unitOfWork.SaveChangesAsync() > 0 ? BaseResult.ReturnSuccess() : BaseResult.ReturnFail();
             }
@@ -48,9 +54,11 @@ namespace EPM.Service.Service
             var dept = await _repository.GetEntityAsync(p => p.ID == id);
             if(null !=dept)
             {
+                // 从传递的token中获取用户信息
+                LoginInfo loginInfo = await _tokenService.GetLoginInfoByToken();
                 dept.IsDeleted = (int)DeleteFlag.Deleted;
                 dept.UpdateTime = DateTime.Now;
-                dept.UpdateUser = "admin";
+                dept.UpdateUser = loginInfo.LoginUser.Name;
                 Expression<Func<Department, object>>[] updatedProperties =
                 {
                     p=>p.IsDeleted,
@@ -117,13 +125,15 @@ namespace EPM.Service.Service
             }
             else
             {
+                // 从传递的token中获取用户信息
+                LoginInfo loginInfo = await _tokenService.GetLoginInfoByToken();
                 // 查询选择的部门
                 var dept = await _repository.GetEntityAsync(p => p.ID == entity.ID && p.IsDeleted == (int)DeleteFlag.NotDeleted);
                 dept.Name = entity.Name;
                 dept.ParentID = entity.ParentID;
                 dept.Description = entity.Description;
                 dept.UpdateTime = DateTime.Now;
-                dept.UpdateUser = "admin";
+                dept.UpdateUser = loginInfo.LoginUser.Name;
                 Expression<Func<Department, object>>[] updatedDataAuthority =
                 {
                     p=>p.UpdateTime,

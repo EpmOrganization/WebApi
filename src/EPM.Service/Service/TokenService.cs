@@ -6,8 +6,10 @@ using EPM.Model.ApiModel;
 using EPM.Model.ConfigModel;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace EPM.Service.Service
@@ -18,38 +20,20 @@ namespace EPM.Service.Service
 
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IUserRepository _userRepository;
-        //private readonly IDataAuthorityRepository _dataAuthorityRepository;
-        //private readonly IConfigurationHelper _configurationHelper;
 
         public TokenService(IOptions<JwtConfig> jwtConfig, IHttpContextAccessor httpContextAccessor,
-            IUserRepository userRepository
-           //IDataAuthorityRepository dataAuthorityRepository,
-           /* IConfigurationHelper configurationHelper*/)
+            IUserRepository userRepository)
         {
             _jwtConfig = jwtConfig.Value;
             _httpContextAccessor = httpContextAccessor;
             _userRepository = userRepository;
-            //_dataAuthorityRepository = dataAuthorityRepository;
-            //_configurationHelper = configurationHelper;
         }
 
         public async Task<LoginInfo> GetLoginInfoByToken()
         {
             LoginInfo loginInfo = new LoginInfo();
             var request = _httpContextAccessor.HttpContext.Request;
-            //string authorization = request.Headers["Authorization"].ToString();
-            /*
-             {"Data":"AxjrXkbU9vRm93nyn5UjF09uc413swJnUSMa2E4OJJEKjBJwwhDxHdmGOP9ty6PU8cdLURfIEXL5VTYK4yufrheomiTI17W7pqDG6a+zGI3zyvwjN+pVxMJluXO1ErPMvOOqn4YtSBvDastAUymEUsWAT/ghkaWsmRUYv1QkLu4zTanjtRtwox3OD1b3ZO5i3obwOxadQvK+hxn+ycDBNpuTygHciDdZpByFC/Gb3LVF0RPgTCE6+kmU/z0eYwiKJUl4dhOu+l2fMuTeEJwdqpSJpq7+iP8rVej9mM5NQa1n6BTHsp42rDNdSo7/K4Fz","Timestamp":1630653484,"Sign":"bd36e2ae3f85dcf32a5084c40fb5a92a"}
-             
-             */
-
-            string authorization = "{\"SData\":\"AxjrXkbU9vRm93nyn5UjF09uc413swJnUSMa2E4OJJEKjBJwwhDxHdmGOP9ty6PU8cdLURfIEXL5VTYK4yufrheomiTI17W7pqDG6a + zGI3zyvwjN + pVxMJluXO1ErPMvOOqn4YtSBvDastAUymEUsWAT / ghkaWsmRUYv1QkLu4zTanjtRtwox3OD1b3ZO5i3obwOxadQvK + hxn + ycDBNpuTygHciDdZpByFC / Gb3LVF0RPgTCE6 + kmU / z0eYwiKJUl4dhOu + l2fMuTeEJwdqpSJpq7 + iP8rVej9mM5NQa1n6BTHsp42rDNdSo7 / K4Fz\",\"Timestamp\":1630653484,\"Sign\":\"bd36e2ae3f85dcf32a5084c40fb5a92a\"}";
-
-            CiphertextInfo dataObj = JsonConvert.DeserializeObject<CiphertextInfo>(authorization);
-            //tbxResult.Text = dataObj.Dencrypt();
-
-
-
+            string authorization = request.Headers["Authorization"].ToString();
             Guid userId = GetUserID(authorization);
             if (userId != Guid.Empty)
             {
@@ -69,26 +53,29 @@ namespace EPM.Service.Service
         /// </summary>
         /// <param name="token"></param>
         /// <returns></returns>
-        public Guid GetUserID(string token)
+        public Guid GetUserID(string authorization)
         {
             Guid userId = Guid.Empty;
             try
             {
-                string[] tempArr = token.Split(' ');
+                string[] tempArr = authorization.Split(' ');
                 if (tempArr.Length != 2)
                     return userId;
 
+                // 序列化
+                CiphertextInfo dataObj = JsonConvert.DeserializeObject<CiphertextInfo>(tempArr[1]);
+                // 获取解密后的token信息
+                string token = dataObj.Dencrypt();
+
                 // 分割Token
-                var jwtArr = tempArr[1].Split('.');
+                var jwtArr = token.Split('.');
                 if (jwtArr.Length < 2)
                     return userId;
 
-                //string key = _configurationHelper.GetValue("AESKey");
-                //var payLoad = JsonConvert.DeserializeObject<Dictionary<string, string>>(Base64UrlEncoder.Decode(jwtArr[1]));
-                //if (!payLoad.ContainsKey("ID"))
-                //    return userId;
-                // 解密
-                //Guid.TryParse(AESEncryptHelper.AESDecrypt(payLoad["ID"], key).Split('|')[0], out userId);
+                // 解析JWT生成的token信息获取UserID
+                var payLoad = JsonConvert.DeserializeObject<Dictionary<string, string>>(Base64UrlEncoder.Decode(jwtArr[1]));
+
+                Guid.TryParse(payLoad["ID"], out userId);
             }
             catch (Exception ex)
             {

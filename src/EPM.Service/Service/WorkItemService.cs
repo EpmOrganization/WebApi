@@ -18,29 +18,31 @@ namespace EPM.Service.Service
     {
         private readonly IWorkItemRepository _repository;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly ITokenService _tokenService;
 
-        public WorkItemService(IWorkItemRepository repository, IUnitOfWork unitOfWork)
+        public WorkItemService(IWorkItemRepository repository, IUnitOfWork unitOfWork,
+            ITokenService tokenService)
         {
             _repository = repository;
             _unitOfWork = unitOfWork;
+            _tokenService = tokenService;
         }
 
 
         public async Task<ValidateResult> AddAsync(WorkItem entity)
         {
+            // 从传递的token中获取用户信息
+            LoginInfo loginInfo = await _tokenService.GetLoginInfoByToken();
+            entity.CreateUser = entity.UpdateUser = loginInfo.LoginUser.Name;
+            entity.CreateTime = entity.UpdateTime = DateTime.Now;
             _repository.Add(entity);
-            return await _unitOfWork.SaveChangesAsync() > 0 ? BaseResult.ReturnSuccess() : BaseResult.ReturnFail();
+            return await _unitOfWork.SaveChangesAsync() > 0 ? ReturnSuccess():ReturnFail();
         }
 
         public async Task<IEnumerable<WorkItem>> GetAll()
         {
             return await _repository.GetAllListAsync(null);
         }
-
-        //public async Task<WorkItemResponseDto> GetPatgeListAsync(PagingRequest pagingRequest)
-        //{
-        //    return await _repository.GetPatgeListAsync(pagingRequest);
-        //}
 
         public async Task<WorkItemResponseDto> GetPageListAsync(WorkItemRequestDto pagingRequest)
         {
@@ -59,30 +61,26 @@ namespace EPM.Service.Service
                     dto.ResponseData.Add(new WorkItem() { RecordDate = beginDay });
                     newWrokItems.Add(new WorkItem() { RecordDate = beginDay });
                 }
-                //else
-                //{
-                //    newWrokItems.Add(oneDayWorkItem);
-                //}
             }
             return dto;
-
-
-            //return await _repository.GetListAsync(pagingRequest);
         }
 
         public async Task<ValidateResult> UpdateAsync(WorkItem entity)
         {
+            // 从传递的token中获取用户信息
+            LoginInfo loginInfo = await _tokenService.GetLoginInfoByToken();
             var workItem = await _repository.GetEntityAsync(p => p.ID == entity.ID);
-            // 
             workItem.WorkContent = entity.WorkContent;
             workItem.Description = entity.Description;
             workItem.UpdateTime = DateTime.Now;
-            workItem.UpdateUser = "admin";
+            workItem.UpdateUser = loginInfo.LoginUser.Name;
 
             Expression<Func<WorkItem, object>>[] updatedProperties =
             {
                p=>p.UpdateUser,
-               p=>p.UpdateTime
+               p=>p.UpdateTime,
+               p=>p.WorkContent,
+               p=>p.Description
             };
 
             _repository.Update(workItem, updatedProperties);

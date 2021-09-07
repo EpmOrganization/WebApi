@@ -19,27 +19,25 @@ namespace EPM.Service.Service
         private readonly IMenuRepository _menuRepository;
         private readonly IRoleMenuRepository _roleMenuRepository;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly ITokenService _tokenService;
 
         public MenuService(IMenuRepository menuRepository,
             IRoleMenuRepository roleMenuRepository,
-            IUnitOfWork unitOfWork)
+            IUnitOfWork unitOfWork,
+            ITokenService tokenService)
         {
             _menuRepository = menuRepository;
             _roleMenuRepository = roleMenuRepository;
             _unitOfWork = unitOfWork;
+            _tokenService = tokenService;
         }
 
         public async Task<ValidateResult> AddAsync(Menu entity)
         {
-            ValidateResult validateResult = new ValidateResult();
-
-                //LoginInfo loginInfo = await _tokenService.GetLoginInfoByToken();
-                entity.ID = Guid.NewGuid();
-            //entity.CreateUser = loginInfo.LoginUser.Name;
-            //entity.UpdateUser = loginInfo.LoginUser.Name;
-            entity.CreateUser = entity.UpdateUser="admin";
-            entity.UpdateTime = DateTime.Now;
-                entity.CreateTime = DateTime.Now;
+            LoginInfo loginInfo = await _tokenService.GetLoginInfoByToken();
+            entity.ID = Guid.NewGuid();
+            entity.CreateUser = entity.UpdateUser = loginInfo.LoginUser.Name;
+            entity.UpdateTime = entity.CreateTime= DateTime.Now;
             _menuRepository.Add(entity);
             return await _unitOfWork.SaveChangesAsync() > 0 ? BaseResult.ReturnSuccess() : BaseResult.ReturnFail();
         }
@@ -55,12 +53,12 @@ namespace EPM.Service.Service
             else
             {
                 // 从传递的token中获取用户信息
-                //LoginInfo loginInfo = await _tokenService.GetLoginInfoByToken();
+                LoginInfo loginInfo = await _tokenService.GetLoginInfoByToken();
                 // 删除权限
                 Menu actionAuthority = await _menuRepository.GetEntityAsync(p => p.ID == id && p.IsDeleted == (int)DeleteFlag.NotDeleted);
                 actionAuthority.IsDeleted = (int)DeleteFlag.Deleted;
                 actionAuthority.UpdateTime = DateTime.Now;
-                actionAuthority.UpdateUser = "admin";
+                actionAuthority.UpdateUser = loginInfo.LoginUser.Name;
                 Expression<Func<Menu, object>>[] updatedProperties =
                 {
                     p=>p.IsDeleted,
@@ -148,10 +146,7 @@ namespace EPM.Service.Service
         {
             List<Menu> list = new List<Menu>();
             // 从token获取当前登录用户
-            // var currentUser = await _tokenService.GetUserByToken();
-            //LoginInfo loginInfo = await _tokenService.GetLoginInfoByToken();
-
-            //LoginInfo loginInfo = null;
+            LoginInfo loginInfo = await _tokenService.GetLoginInfoByToken();
 
             #region 去掉Redis缓存
             //// 从缓存中获取对应的角色权限明细数据
@@ -177,9 +172,7 @@ namespace EPM.Service.Service
             #endregion
 
             // 根据用户的角色ID获取角色权限明细
-            //var roleAuthorityDetail = await _roleMenuRepository.GetListAsync(p => p.RoleID == loginInfo.LoginUser.RoleID && p.IsDeleted == (int)DeleteFlag.NotDeleted);
-
-            var roleAuthorityDetail = await _roleMenuRepository.GetListAsync(p => p.RoleID == Guid.Parse("81e2c6b0-6ab3-4fbb-923c-c9a1a8b4cfa4") && p.IsDeleted == (int)DeleteFlag.NotDeleted);
+            var roleAuthorityDetail = await _roleMenuRepository.GetListAsync(p => p.RoleID == loginInfo.LoginUser.RoleID && p.IsDeleted == (int)DeleteFlag.NotDeleted);
             // 根据权限ID获取具体权限信息
             foreach (RoleMenu item in roleAuthorityDetail)
             {

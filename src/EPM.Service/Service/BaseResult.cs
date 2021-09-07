@@ -1,11 +1,28 @@
 ﻿using EPM.Framework.Helper;
+using EPM.IService.Service;
 using EPM.Model.ApiModel;
 using EPM.Model.Enum;
+using System.Threading.Tasks;
 
 namespace EPM.Service.Service
 {
     public class BaseResult
     {
+
+        //private readonly ITokenService _tokenService;
+
+        //public BaseResult(
+        //    ITokenService tokenService)
+        //{
+        //    _tokenService = tokenService;
+        //}
+
+        //public async Task<LoginInfo> GetLoginInfo()
+        //{
+        //    return await _tokenService.GetLoginInfoByToken();
+        //}
+
+
         public static ValidateResult ReturnSuccess()
         {
             return new ValidateResult()

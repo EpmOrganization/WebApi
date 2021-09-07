@@ -1,6 +1,7 @@
 ﻿using EPM.EFCore.Context;
 using EPM.EFCore.Uow;
 using EPM.IRepository.Repository;
+using EPM.IService.Service;
 using EPM.Model.DbModel;
 using EPM.Service.Service;
 using Moq;
@@ -24,8 +25,8 @@ namespace EPM.XUnitTest
             var _dbContext = await new InMemoryDbContextFactory().GetDbContext();
             var repository = new Mock<IUserRepository>();
             var _unitOfWork = new UnitOfWork<AppDbContext>(_dbContext);
-            //var _unitOfWork = new Mock<IUnitOfWork>();
-            var userService = new UserService(repository.Object,_unitOfWork);
+            var _tokenService = new Mock<ITokenService>();
+            var userService = new UserService(repository.Object,_unitOfWork,_tokenService.Object);
 
             var user = new User()
             {

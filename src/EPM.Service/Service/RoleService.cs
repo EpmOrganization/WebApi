@@ -19,15 +19,18 @@ namespace EPM.Service.Service
         private readonly IRoleMenuRepository _roleMenuRepository;
         private readonly IUserRepository _userRepository;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly ITokenService _tokenService;
 
         public RoleService(IRoleRepository repository, IRoleMenuRepository roleMenuRepository,
             IUserRepository userRepository,
-            IUnitOfWork unitOfWork)
+            IUnitOfWork unitOfWork,
+            ITokenService tokenService)
         {
             _repository = repository;
             _roleMenuRepository = roleMenuRepository;
             _userRepository = userRepository;
             _unitOfWork = unitOfWork;
+            _tokenService = tokenService;
         }
 
         /// <summary>
@@ -42,8 +45,6 @@ namespace EPM.Service.Service
             var role = await _repository.GetEntityAsync(p => p.Name == entity.Name && p.IsDeleted == (int)DeleteFlag.NotDeleted);
             if (null != role)
             {
-                //validateResult.ValidateCode = 0;
-                //validateResult.ValidateMsg = "已存在同名角色，请勿重复添加";
                 return new ValidateResult()
                 {
                     Code = 0,
@@ -53,10 +54,9 @@ namespace EPM.Service.Service
             else
             {
                 // 从传递的token中获取用户信息
-                //LoginInfo loginInfo = await _tokenService.GetLoginInfoByToken();
+                LoginInfo loginInfo = await _tokenService.GetLoginInfoByToken();
                 entity.CreateTime = entity.UpdateTime = DateTime.Now;
-                //entity.CreateUser = entity.UpdateUser = loginInfo.LoginUser.Name;
-                entity.CreateUser = entity.UpdateUser = "admin";
+                entity.CreateUser = entity.UpdateUser = loginInfo.LoginUser.Name;
                 entity.ID = Guid.NewGuid();
                 // 添加Role
                 _repository.Add(entity);
@@ -73,11 +73,10 @@ namespace EPM.Service.Service
                             RoleID = entity.ID,
                             MenuID = authorityID,
                             CreateTime = dt,
-                            //CreateUser = loginInfo.LoginUser.Name,
-                            CreateUser = "admin",
+                            CreateUser = loginInfo.LoginUser.Name,
                             ID = Guid.NewGuid(),
                             UpdateTime = dt,
-                            UpdateUser = "admin"
+                            UpdateUser = loginInfo.LoginUser.Name
                         };
                         list.Add(detail);
                     }
@@ -96,7 +95,7 @@ namespace EPM.Service.Service
         public async Task<ValidateResult> DeleteAsync(Guid id)
         {
             //// 从Token获取当前登录用户信息
-            //LoginInfo loginInfo = await _tokenService.GetLoginInfoByToken();
+            LoginInfo loginInfo = await _tokenService.GetLoginInfoByToken();
             // 判断该角色是否已经分配给用户使用
             var users = await _userRepository.GetAllListAsync(p => p.RoleID == id);
             // 有数据
@@ -111,8 +110,7 @@ namespace EPM.Service.Service
 
                 role.IsDeleted = (int)DeleteFlag.Deleted;
                 role.UpdateTime = DateTime.Now;
-                //role.UpdateUser = loginInfo.LoginUser.Name;
-                role.UpdateUser = "admin";
+                role.UpdateUser = loginInfo.LoginUser.Name;
                 Expression<Func<Role, object>>[] updatedProperties =
                 {
                     p=>p.IsDeleted,
@@ -129,8 +127,7 @@ namespace EPM.Service.Service
                     {
                         item.IsDeleted = (int)DeleteFlag.Deleted;
                         item.UpdateTime = DateTime.Now;
-                        //item.UpdateUser = loginInfo.LoginUser.Name;
-                        item.UpdateUser = "admin";
+                        item.UpdateUser = loginInfo.LoginUser.Name;
                         Expression<Func<RoleMenu, object>>[] updatedPropertiesDetail =
                         {
                             p=>p.IsDeleted,
@@ -160,7 +157,7 @@ namespace EPM.Service.Service
         public async Task<ValidateResult> UpdateAsync(Role entity)
         {
             // 从传递的token中获取用户信息
-            //LoginInfo loginInfo = await _tokenService.GetLoginInfoByToken();
+            LoginInfo loginInfo = await _tokenService.GetLoginInfoByToken();
 
             var role = await _repository.GetEntityAsync(p => p.Name == entity.Name && p.ID != entity.ID && p.IsDeleted == (int)DeleteFlag.NotDeleted);
             if (role != null)
@@ -174,8 +171,7 @@ namespace EPM.Service.Service
 
                 role.Description = entity.Description;
                 role.UpdateTime = DateTime.Now;
-                //role.UpdateUser = loginInfo.LoginUser.Name;
-                role.UpdateUser = "admin";
+                role.UpdateUser = loginInfo.LoginUser.Name;
                 role.Name = entity.Name;
                 role.HalfCheckeds = entity.HalfCheckeds;
 
@@ -198,8 +194,7 @@ namespace EPM.Service.Service
                     {
                         item.IsDeleted = (int)DeleteFlag.Deleted;
                         item.UpdateTime = DateTime.Now;
-                        //item.UpdateUser = loginInfo.LoginUser.Name;
-                        item.UpdateUser = "admin";
+                        item.UpdateUser = loginInfo.LoginUser.Name;
                         Expression<Func<RoleMenu, object>>[] updatedPropertiesDetail =
                         {
                             p=>p.IsDeleted,
@@ -222,11 +217,10 @@ namespace EPM.Service.Service
                             RoleID = entity.ID,
                             MenuID = authorityID,
                             CreateTime = dt,
-                            //CreateUser = loginInfo.LoginUser.Name,
-                            CreateUser = "admin",
+                            CreateUser = loginInfo.LoginUser.Name,
                             ID = Guid.NewGuid(),
                             UpdateTime = dt,
-                            UpdateUser = "admin"
+                            UpdateUser = loginInfo.LoginUser.Name
                         };
                         list.Add(detail);
                     }
