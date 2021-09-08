@@ -58,24 +58,48 @@ namespace EPM.Service.Service
             Guid userId = Guid.Empty;
             try
             {
+                #region 先生成token在加密
+                //string[] tempArr = authorization.Split(' ');
+                //if (tempArr.Length != 2)
+                //    return userId;
+
+                //// 序列化
+                //CiphertextInfo dataObj = JsonConvert.DeserializeObject<CiphertextInfo>(tempArr[1]);
+                //// 获取解密后的token信息
+                //string token = dataObj.Dencrypt();
+
+                //// 分割Token
+                //var jwtArr = token.Split('.');
+                //if (jwtArr.Length < 2)
+                //    return userId;
+
+                //// 解析JWT生成的token信息获取UserID
+                //var payLoad = JsonConvert.DeserializeObject<Dictionary<string, string>>(Base64UrlEncoder.Decode(jwtArr[1]));
+
+                //Guid.TryParse(payLoad["ID"], out userId); 
+                #endregion
+
+                #region 先加密在生成token
                 string[] tempArr = authorization.Split(' ');
                 if (tempArr.Length != 2)
                     return userId;
 
-                // 序列化
-                CiphertextInfo dataObj = JsonConvert.DeserializeObject<CiphertextInfo>(tempArr[1]);
-                // 获取解密后的token信息
-                string token = dataObj.Dencrypt();
-
                 // 分割Token
-                var jwtArr = token.Split('.');
+                var jwtArr = tempArr[1].Split('.');
                 if (jwtArr.Length < 2)
                     return userId;
 
                 // 解析JWT生成的token信息获取UserID
                 var payLoad = JsonConvert.DeserializeObject<Dictionary<string, string>>(Base64UrlEncoder.Decode(jwtArr[1]));
 
-                Guid.TryParse(payLoad["ID"], out userId);
+                // 序列化
+                CiphertextInfo dataObj = JsonConvert.DeserializeObject<CiphertextInfo>(payLoad["ID"]);
+                // 获取解密后的token信息
+                string token = dataObj.Dencrypt();
+
+                Guid.TryParse(token, out userId);
+                #endregion
+
             }
             catch (Exception ex)
             {

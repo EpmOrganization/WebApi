@@ -80,6 +80,13 @@ namespace EPM.Service.Service
             return _repository.GetAllListAsync(predicate);
         }
 
+        public async Task<User> GetLoginUser()
+        {
+            // 从传递的token中获取用户信息
+            LoginInfo loginInfo = await _tokenService.GetLoginInfoByToken();
+            return loginInfo.LoginUser;
+        }
+
         public async Task<UserResponseDto> GetPatgeListAsync(PagingRequest pagingRequest)
         {
             return await _repository.GetPatgeListAsync(pagingRequest);

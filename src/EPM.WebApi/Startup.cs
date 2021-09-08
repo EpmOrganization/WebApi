@@ -2,13 +2,18 @@ using EPM.EFCore.Context;
 using EPM.EFCore.Uow;
 using EPM.Framework.Extensions;
 using EPM.Framework.Settings;
+using EPM.Model.ConfigModel;
 using EPM.WebApi.Extensions;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
+using System;
+using System.Text;
 
 namespace EPM.WebApi
 {
@@ -36,6 +41,33 @@ namespace EPM.WebApi
             // 过滤器
             //services.AddControllers(options => options.Filters.Add(typeof(CustomerResultFilter)));
 
+            #region 配置JWT验证
+            services.Configure<JwtConfig>(Configuration.GetSection("JwtConfig"));
+            JwtConfig jwtConfig = Configuration.GetSection("JwtConfig").Get<JwtConfig>();
+            services.AddAuthentication(x =>
+            {
+                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(options => 
+            {
+                options.RequireHttpsMetadata = false;
+                options.SaveToken = true;
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtConfig.IssuerSigningKey)),
+                    ValidIssuer = jwtConfig.Issuer,
+                    ValidAudience = jwtConfig.Audience,
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    // 设置缓冲时间为0
+                    ClockSkew = TimeSpan.Zero,
+                    RequireExpirationTime = true
+                };
+            });
+            #endregion
+
             #region 扩展方法
             services.AddCoreServiceProvider(Configuration);
             #endregion
@@ -59,6 +91,10 @@ namespace EPM.WebApi
 
             app.AddCoreConfigureProvider(Configuration);
             app.UseHttpsRedirection();
+
+            #region 添加身份认证中间件
+            app.UseAuthentication(); 
+            #endregion
 
             app.UseRouting();
 

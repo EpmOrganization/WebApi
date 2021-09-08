@@ -1,11 +1,13 @@
 ﻿using EPM.IService.Service;
 using EPM.Model.ApiModel;
 using EPM.Model.Enum;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
 namespace EPM.WebApi.Controllers
 {
+    [Authorize]
     [Route("api")]
     [ApiController]
     public class LoginController : ControllerBase

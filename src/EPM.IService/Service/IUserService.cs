@@ -9,5 +9,7 @@ namespace EPM.IService.Service
     public interface IUserService : IBaseService<User>
     {
         Task<UserResponseDto> GetPatgeListAsync(PagingRequest pagingRequest);
+
+        Task<User> GetLoginUser();
     }
 }

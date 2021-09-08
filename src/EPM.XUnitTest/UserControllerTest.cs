@@ -18,7 +18,6 @@ namespace EPM.XUnitTest
         public async Task Add_Return()
         {
             var userService = new Mock<IUserService>();
-
             UserController usersController = new UserController(userService.Object);
 
             var user = new User()

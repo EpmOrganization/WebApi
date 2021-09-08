@@ -2,15 +2,14 @@
 using EPM.Model.ApiModel;
 using EPM.Model.DbModel;
 using EPM.Model.Dto.Request.WorkItemRequest;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace EPM.WebApi.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class WorkItemController : ControllerBase

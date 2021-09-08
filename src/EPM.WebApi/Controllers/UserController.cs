@@ -3,16 +3,14 @@ using EPM.Model.ApiModel;
 using EPM.Model.DbModel;
 using EPM.Model.Dto.Response.UserResponse;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace EPM.WebApi.Controllers
 {
-    //[Authorize]
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class UserController : ControllerBase
@@ -94,19 +92,7 @@ namespace EPM.WebApi.Controllers
         public async Task<ActionResult<ApiResponseWithData<User>>> GetCurrentUser()
         {
             ApiResponseWithData<User> result = new ApiResponseWithData<User>().Success();
-            // User currentUser = await _tokenService.GetUserByToken();
-            //LoginInfo loginInfo = await _tokenService.GetLoginInfoByToken();
-            //result.ResultCode = ResultCode.Success;
-            //result.ResultMsg = EnumHelper.GetEnumDesc(ResultCode.Success);
-
-            LoginInfo loginInfo = new LoginInfo()
-            {
-                LoginUser = new User()
-                {
-                    Name="测试"
-                }
-            };
-            result.Data = loginInfo.LoginUser;
+            result.Data =await _userService.GetLoginUser();
             return result;
         }
     }
