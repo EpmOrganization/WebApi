@@ -80,38 +80,6 @@ namespace EPM.Service.Service
         }
 
         /// <summary>
-        /// 递归构建Children
-        /// </summary>
-        /// <param name="paraParentNode"></param>
-        /// <returns></returns>
-        private void BuildTree(DeptResponseDto paraParentNode, List<Department> listMenu)
-        {
-            // 获取子级
-            var nodes = listMenu.Where(p => p.ParentID == paraParentNode.ID && p.IsDeleted == (int)DeleteFlag.NotDeleted);
-
-            if (nodes.Any() && paraParentNode.Children == null)
-                paraParentNode.Children = new List<DeptResponseDto>();
-            // 循环遍历子级
-            foreach (Department node in nodes)
-            {
-                DeptResponseDto dto = new DeptResponseDto();
-                dto.ID = node.ID;
-                dto.Description = node.Description;
-                dto.ID = node.ID;
-                dto.Name = node.Name;
-                dto.ParentID = node.ParentID;
-                dto.CreateTime = node.CreateTime;
-                dto.CreateUser = node.CreateUser;
-                dto.UpdateTime = node.UpdateTime;
-                dto.UpdateUser = node.UpdateUser;
-                dto.ClusterID = node.ClusterID;
-                dto.Dep = node.Dep;
-                paraParentNode.Children.Add(dto);
-                BuildTree(dto, listMenu);
-            }
-        }
-
-        /// <summary>
         /// 修改
         /// </summary>
         /// <param name="entity"></param>
@@ -175,6 +143,38 @@ namespace EPM.Service.Service
             }
 
             return list;
+        }
+
+        /// <summary>
+        /// 递归构建Children
+        /// </summary>
+        /// <param name="paraParentNode"></param>
+        /// <returns></returns>
+        private void BuildTree(DeptResponseDto paraParentNode, List<Department> listMenu)
+        {
+            // 获取子级
+            var nodes = listMenu.Where(p => p.ParentID == paraParentNode.ID && p.IsDeleted == (int)DeleteFlag.NotDeleted);
+
+            if (nodes.Any() && paraParentNode.Children == null)
+                paraParentNode.Children = new List<DeptResponseDto>();
+            // 循环遍历子级
+            foreach (Department node in nodes)
+            {
+                DeptResponseDto dto = new DeptResponseDto();
+                dto.ID = node.ID;
+                dto.Description = node.Description;
+                dto.ID = node.ID;
+                dto.Name = node.Name;
+                dto.ParentID = node.ParentID;
+                dto.CreateTime = node.CreateTime;
+                dto.CreateUser = node.CreateUser;
+                dto.UpdateTime = node.UpdateTime;
+                dto.UpdateUser = node.UpdateUser;
+                dto.ClusterID = node.ClusterID;
+                dto.Dep = node.Dep;
+                paraParentNode.Children.Add(dto);
+                BuildTree(dto, listMenu);
+            }
         }
     }
 }

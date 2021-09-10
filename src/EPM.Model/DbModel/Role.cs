@@ -14,11 +14,6 @@ namespace EPM.Model.DbModel
         public string Name { get; set; }
 
         /// <summary>
-        /// 备注
-        /// </summary>
-        public string Description { get; set; }
-
-        /// <summary>
         /// 是否删除 0：未删除 1：删除
         /// </summary>
         public int IsDeleted { get; set; }

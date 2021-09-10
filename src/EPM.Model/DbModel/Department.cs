@@ -18,11 +18,6 @@ namespace EPM.Model.DbModel
         public Guid? ParentID { get; set; }
 
         /// <summary>
-        /// 备注
-        /// </summary>
-        public string Description { get; set; }
-
-        /// <summary>
         /// 是否删除 0：正常存在 1：被删除
         /// </summary>
         public int IsDeleted { get; set; }

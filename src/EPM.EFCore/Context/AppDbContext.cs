@@ -38,6 +38,8 @@ namespace EPM.EFCore.Context
 
         public DbSet<WorkItem> WorkItems { get; set; }
 
+        public DbSet<DataAuthority> DataAuthorities { get; set; }
+
         #endregion
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

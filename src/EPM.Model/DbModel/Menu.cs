@@ -28,11 +28,6 @@ namespace EPM.Model.DbModel
 		public int? Type { get; set; }
 
 		/// <summary>
-		/// 备注
-		/// </summary>
-		public string Description { get; set; }
-
-		/// <summary>
 		/// 是否删除
 		/// </summary>
 		public int IsDeleted { get; set; }

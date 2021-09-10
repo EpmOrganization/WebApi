@@ -81,5 +81,70 @@ namespace EPM.WebApi.Controllers
             ValidateResult validateResult = await _service.DeleteAsync(id);
             return validateResult.Code > 0 ? ApiResponse.Success() : ApiResponse.Fail();
         }
+
+        /// <summary>
+        /// 根据当前用户获取授权的部门
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("GetDept")]
+        public async Task<ActionResult<ApiResponseWithData<List<DeptTest>>>> GetDept(Guid id)
+        {
+            ApiResponseWithData<List<DeptTest>> result = new ApiResponseWithData<List<DeptTest>>().Success();
+
+            //var responseDto = await _service.GetList();
+            //if (responseDto != null)
+            //{
+            //    result.Data = responseDto.ToList();
+            //    result.Count = responseDto.Count();
+            //}
+            //else
+            //{
+            //    result = result.Fail();
+            //}
+
+            //List<DeptTest> list = new List<DeptTest>()
+            //{
+            //    new DeptTest()
+            //    {
+            //        label="技术中心",
+            //        value=Guid.NewGuid().ToString()
+            //    },
+            //    new DeptTest()
+            //    {
+            //        label="行政部",
+            //        value=Guid.NewGuid().ToString()
+            //    }
+            //};
+
+            List<DeptTest> list = await Task.Run(() => 
+            {
+                return new List<DeptTest>()
+                {
+                        new DeptTest()
+                        {
+                            label="技术中心",
+                            value=Guid.NewGuid().ToString()
+                        },
+                        new DeptTest()
+                        {
+                            label="行政部",
+                            value=Guid.NewGuid().ToString()
+                        }
+                };
+            
+            });
+
+            result.Data = list;
+            return result;
+        }
+    }
+
+    public class DeptTest
+    {
+        public string label { get; set; }
+
+        public string value { get; set; }
     }
 }

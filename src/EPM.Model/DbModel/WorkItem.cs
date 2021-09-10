@@ -17,6 +17,9 @@ namespace EPM.Model.DbModel
         /// </summary>
         public DateTime RecordDate {get; set;}
 
+        /// <summary>
+        /// 创建用户ID
+        /// </summary>
         public Guid CreateUserID { get; set; }
 
         /// <summary>

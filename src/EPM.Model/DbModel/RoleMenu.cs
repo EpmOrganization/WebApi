@@ -16,11 +16,6 @@ namespace EPM.Model.DbModel
 		public Guid MenuID { get; set; }
 
 		/// <summary>
-		/// 备注
-		/// </summary>
-		public string Description { get; set; }
-
-		/// <summary>
 		/// 删除
 		/// </summary>
 		public int IsDeleted { get; set; }
