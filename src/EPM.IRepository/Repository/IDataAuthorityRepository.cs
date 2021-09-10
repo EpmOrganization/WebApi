@@ -1,4 +1,5 @@
 ﻿using EPM.Model.DbModel;
+using EPM.Model.Dto.Response.DataAuthorityResponse;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,5 +16,7 @@ namespace EPM.IRepository.Repository
         void AddBatch(List<DataAuthority> list);
 
         void DeleteBatch(List<DataAuthority> list);
+
+        Task<List<WorkItemAuthorityDto>> GetWotkItemAuthority(Guid userId);   
     }
 }

@@ -26,11 +26,10 @@ namespace EPM.IService.Service
         /// <returns></returns>
         Task<ValidateResult> UpdateAsync(WorkItem entity);
 
-
-        //Task<WorkItemResponseDto> GetPatgeListAsync(PagingRequest pagingRequest);
-
         Task<WorkItemResponseDto> GetPageListAsync(WorkItemRequestDto pagingRequest);
 
         Task<IEnumerable<WorkItem>> GetAll();
+
+        Task<WorkItemResponseDto> GetAuthorityListAsync(AuthorityWorkItemRequestDto pagingRequest);
     }
 }

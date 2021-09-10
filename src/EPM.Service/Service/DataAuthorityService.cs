@@ -24,16 +24,19 @@ namespace EPM.Service.Service
         private readonly ITokenService _tokenService;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IDepartmentRepository _departmentRepository;
+        private readonly IUserRepository _userRepository;
 
         public DataAuthorityService(IDataAuthorityRepository allottingRepository,
             ITokenService tokenService,
             IUnitOfWork unitOfWork,
-            IDepartmentRepository departmentRepository)
+            IDepartmentRepository departmentRepository,
+            IUserRepository userRepository)
         {
             _allottingRepository = allottingRepository;
             _tokenService = tokenService;
             _unitOfWork = unitOfWork;
-            _departmentRepository = departmentRepository;   
+            _departmentRepository = departmentRepository;
+            _userRepository = userRepository;
         }
 
         public async Task<ValidateResult> AddAsync(DataAuthorityRequestDto entity)
@@ -98,7 +101,50 @@ namespace EPM.Service.Service
            return listDto;
         }
 
+        public async Task<List<WorkItemAuthorityDto>> GetWotkItemAuthority()
+        {
+            LoginInfo loginInfo = await _tokenService.GetLoginInfoByToken();
+            // 获取选择的权限部门
+            List<WorkItemAuthorityDto> dto= await _allottingRepository.GetWotkItemAuthority(loginInfo.LoginUser.ID);
+            // 获取所有用户
+            var listUsers=await _userRepository.GetAllListAsync(null);
+            // 处理部门对应的员工
+            foreach (var item in dto)
+            {
+                BuildUserTree(item, listUsers.ToList());
+            }
 
+
+
+            return dto;
+        }
+
+        private void BuildUserTree(WorkItemAuthorityDto paraParentNode, List<User> listUser)
+        {
+            // 根据部门获取员工
+            var users = listUser.Where(p => p.DepartmentID == paraParentNode.Id);
+            if (users.Any() && paraParentNode.Children == null)
+                paraParentNode.Children = new List<WorkItemAuthorityDto>();
+            // 循环遍历子级
+            foreach (User node in users)
+            {
+                WorkItemAuthorityDto dto = new WorkItemAuthorityDto();
+                dto.Name = node.Name;
+                dto.Id = node.ID;
+                paraParentNode.Children.Add(dto);
+                // 递归
+                 BuildUserTree(dto, listUser);
+
+            }
+        }
+
+        /// <summary>
+        /// 递归构建树
+        /// </summary>
+        /// <param name="paraParentNode"></param>
+        /// <param name="listDept"></param>
+        /// <param name="listAuthority"></param>
+        /// <returns></returns>
         private async Task BuildTree(DataAuthorityResponseDto paraParentNode, List<Department> listDept, List<DataAuthority> listAuthority)
         {
             // 获取子级部门

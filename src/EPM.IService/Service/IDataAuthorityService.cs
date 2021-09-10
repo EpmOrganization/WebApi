@@ -15,8 +15,8 @@ namespace EPM.IService.Service
     {
         Task<ValidateResult> AddAsync(DataAuthorityRequestDto entity);
 
-        //Task<IEnumerable<DataAuthority>> GetListAsync(Expression<Func<DataAuthority, bool>> predicate);
-
         Task<IEnumerable<DataAuthorityResponseDto>> GetListDtoAsync(Guid userId);
+
+        Task<List<WorkItemAuthorityDto>> GetWotkItemAuthority();
     }
 }

@@ -12,6 +12,8 @@ namespace EPM.IRepository.Repository
     {
         Task<WorkItemResponseDto> GetPageListAsync(PagingRequest pagingRequest);
 
-        Task<WorkItemResponseDto> GetListAsync(WorkItemRequestDto pagingRequest);
+        Task<WorkItemResponseDto> GetListAsync(SearchCondition pagingRequest);
+
+        //Task<WorkItemResponseDto> GetAuthorityListAsync(AuthorityWorkItemRequestDto pagingRequest);
     }
 }

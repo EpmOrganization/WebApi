@@ -60,5 +60,20 @@ namespace EPM.WebApi.Controllers
             ValidateResult validateResult = await _service.AddAsync(authorityAllot);
             return validateResult.Code > 0 ? ApiResponse.Success() : ApiResponse.Fail();
         }
+
+        /// <summary>
+        /// 根据用户id查询选择的部门
+        /// </summary>
+        /// <param name="id">用户ID</param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("GetAuthorityDept")]
+        public async Task<ActionResult<ApiResponseWithData<List<WorkItemAuthorityDto>>>> GetAuthorityDept()
+        {
+            ApiResponseWithData<List<WorkItemAuthorityDto>> result = new ApiResponseWithData<List<WorkItemAuthorityDto>>().Success();
+            var data = await _service.GetWotkItemAuthority();
+            result.Data = data.ToList();
+            return result;
+        }
     }
 }

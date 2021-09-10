@@ -23,7 +23,7 @@ namespace EPM.WebApi.Controllers
 
 
         /// <summary>
-        /// 分页获取所有用户信息
+        /// 获取个人工作记录
         /// </summary>
         /// <param name="searchRequestDto"></param>
         /// <returns></returns>
@@ -47,32 +47,27 @@ namespace EPM.WebApi.Controllers
         }
 
 
-        ///// <summary>
-        ///// 分页获取所有用户信息
-        ///// </summary>
-        ///// <param name="searchRequestDto"></param>
-        ///// <returns></returns>
-        //[HttpGet]
-        //[Route("getlist")]
-        //public async Task<ActionResult<ApiResponseWithData<List<WorkItem>>>> Getlist()
-        //{
-        //    ApiResponseWithData<List<WorkItem>> result = new ApiResponseWithData<List<WorkItem>>().Success();
+        [HttpPost]
+        [Route("GetAuthorityWorkItemlist")]
+        public async Task<ActionResult<ApiResponseWithData<List<WorkItem>>>> GetAuthorityWorkItemlist([FromBody] AuthorityWorkItemRequestDto pagingRequest)
+        {
+            ApiResponseWithData<List<WorkItem>> result = new ApiResponseWithData<List<WorkItem>>().Success();
 
-        //    var responseDto = await _service.GetAll();
-        //    if (responseDto != null)
-        //    {
-        //        result.Data = responseDto.ToList();
-        //        result.Count = responseDto.Count();
-        //    }
-        //    else
-        //    {
-        //        result = result.Fail();
-        //    }
-        //    return result;
-        //}
+            var responseDto = await _service.GetAuthorityListAsync(pagingRequest);
+            if (responseDto != null)
+            {
+                result.Data = responseDto.ResponseData;
+                result.Count = responseDto.Count;
+            }
+            else
+            {
+                result = result.Fail();
+            }
+            return result;
+        }
 
         /// <summary>
-        /// 新增用户
+        /// 新增工作记录
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
@@ -84,9 +79,9 @@ namespace EPM.WebApi.Controllers
         }
 
         /// <summary>
-        /// 修改用户信息
+        /// 修改工作记录
         /// </summary>
-        /// <param name="user">用户实体</param>
+        /// <param name="user">工作记录实体</param>
         /// <returns></returns>
         [HttpPut]
         public async Task<ActionResult<ApiResponse>> Put([FromBody] WorkItem workItem)

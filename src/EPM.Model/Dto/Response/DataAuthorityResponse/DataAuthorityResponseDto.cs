@@ -6,17 +6,6 @@ using System.Text;
 
 namespace EPM.Model.Dto.Response.DataAuthorityResponse
 {
-    ///// <summary>
-    ///// 数据权限返回类型
-    ///// </summary>
-    //public class DataAuthorityResponseDto : DeptResponseDto
-    //{
-    //    /// <summary>
-    //    /// 选中 0 未选中 1 选中
-    //    /// </summary>
-    //    public int Allotted { get; set; }
-    //}
-
     /// <summary>
     /// 数据权限返回类型
     /// </summary>

@@ -1,6 +1,8 @@
 ﻿using EPM.EFCore.Context;
 using EPM.IRepository.Repository;
 using EPM.Model.DbModel;
+using EPM.Model.Dto.Response.DataAuthorityResponse;
+using EPM.Model.Enum;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -33,6 +35,20 @@ namespace EPM.Repository.Repository
         public async Task<List<DataAuthority>> GetListDtoAsync(Expression<Func<DataAuthority, bool>> predicate)
         {
             return  predicate != null ? await _dbContext.DataAuthorities.Where(predicate).ToListAsync() : await _dbContext.DataAuthorities.ToListAsync();
+        }
+
+        public async Task<List<WorkItemAuthorityDto>> GetWotkItemAuthority(Guid userId)
+        {
+            var query = from d in _dbContext.Departments
+                        join a in _dbContext.DataAuthorities on d.ID equals a.DepartID
+                        where a.UserID == userId
+                        && a.IsDeleted == (int)DeleteFlag.NotDeleted
+                        select new WorkItemAuthorityDto()
+                        {
+                            Name=d.Name,
+                            Id = d.ID
+                        };
+            return await query.ToListAsync();
         }
     }
 }
