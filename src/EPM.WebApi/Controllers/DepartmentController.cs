@@ -3,9 +3,11 @@ using EPM.Model.ApiModel;
 using EPM.Model.DbModel;
 using EPM.Model.Dto.Response.DeptResponse;
 using EPM.Model.Enum;
+using EPM.WebApi.Filter;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,17 +15,19 @@ using System.Threading.Tasks;
 
 namespace EPM.WebApi.Controllers
 {
-    [Authorize]
+    //[Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class DepartmentController : ControllerBase
     {
 
         private readonly IDepartmentService _service;
+        private readonly ILogger<CustomerGlobalExceptionFilterAsync> _logger;
 
-        public DepartmentController(IDepartmentService service)
+        public DepartmentController(IDepartmentService service, ILogger<CustomerGlobalExceptionFilterAsync> logger)
         {
             _service = service;
+            _logger = logger;
         }
 
         [HttpGet]
@@ -31,7 +35,6 @@ namespace EPM.WebApi.Controllers
         public async Task<ActionResult<ApiResponseWithData<List<DeptResponseDto>>>> Getlist()
         {
             ApiResponseWithData<List<DeptResponseDto>> result = new ApiResponseWithData<List<DeptResponseDto>>().Success();
-
             var responseDto = await _service.GetList();
             if (responseDto != null)
             {
@@ -92,31 +95,6 @@ namespace EPM.WebApi.Controllers
         public async Task<ActionResult<ApiResponseWithData<List<DeptTest>>>> GetDept(Guid id)
         {
             ApiResponseWithData<List<DeptTest>> result = new ApiResponseWithData<List<DeptTest>>().Success();
-
-            //var responseDto = await _service.GetList();
-            //if (responseDto != null)
-            //{
-            //    result.Data = responseDto.ToList();
-            //    result.Count = responseDto.Count();
-            //}
-            //else
-            //{
-            //    result = result.Fail();
-            //}
-
-            //List<DeptTest> list = new List<DeptTest>()
-            //{
-            //    new DeptTest()
-            //    {
-            //        label="技术中心",
-            //        value=Guid.NewGuid().ToString()
-            //    },
-            //    new DeptTest()
-            //    {
-            //        label="行政部",
-            //        value=Guid.NewGuid().ToString()
-            //    }
-            //};
 
             List<DeptTest> list = await Task.Run(() => 
             {

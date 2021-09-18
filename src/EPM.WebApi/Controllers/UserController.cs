@@ -2,8 +2,10 @@
 using EPM.Model.ApiModel;
 using EPM.Model.DbModel;
 using EPM.Model.Dto.Response.UserResponse;
+using EPM.WebApi.Filter;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -20,6 +22,7 @@ namespace EPM.WebApi.Controllers
         public UserController(IUserService userService)
         {
             _userService = userService;
+
         }
 
         /// <summary>

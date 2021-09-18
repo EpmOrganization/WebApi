@@ -4,6 +4,7 @@ using EPM.Framework.Extensions;
 using EPM.Framework.Settings;
 using EPM.Model.ConfigModel;
 using EPM.WebApi.Extensions;
+using EPM.WebApi.Filter;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -40,6 +41,7 @@ namespace EPM.WebApi
 
             // π˝¬À∆˜
             //services.AddControllers(options => options.Filters.Add(typeof(CustomerResultFilter)));
+            services.AddControllers(options => options.Filters.Add(typeof(CustomerGlobalExceptionFilterAsync)));
 
             #region ≈‰÷√JWT—È÷§
             services.Configure<JwtConfig>(Configuration.GetSection("JwtConfig"));
